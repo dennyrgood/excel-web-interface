@@ -203,7 +203,7 @@
 </head>
 <body>
     <div class="container">
-        <div style="text-align: right; font-size: 12px; color: #999; margin-bottom: 15px;">v6</div>
+        <div style="text-align: right; font-size: 12px; color: #999; margin-bottom: 15px;">v7</div>
         <h1>📊 Excel Data Entry</h1>
         <p class="subtitle">Add data to your OneDrive Excel file</p>
 
@@ -280,6 +280,27 @@
 
         // ============ STATE MANAGEMENT ============
         let refreshToken = null;
+        let codeVerifier = null;
+
+        // ============ PKCE HELPERS ============
+        function generateCodeVerifier() {
+            const array = new Uint8Array(32);
+            crypto.getRandomValues(array);
+            return btoa(String.fromCharCode.apply(null, array))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=/g, '');
+        }
+
+        async function generateCodeChallenge(verifier) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(verifier);
+            const digest = await crypto.subtle.digest('SHA-256', data);
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(digest)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=/g, '');
+        }
 
         // ============ INITIALIZATION ============
         document.addEventListener('DOMContentLoaded', () => {
@@ -309,14 +330,21 @@
 
         // ============ AUTHORIZATION FLOW ============
         function startAuthorization() {
-            const authUrl = `https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?` +
-                `client_id=${encodeURIComponent(CLIENT_ID)}&` +
-                `response_type=code&` +
-                `scope=${encodeURIComponent('Files.ReadWrite.All offline_access')}&` +
-                `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
-                `response_mode=query`;
-            
-            window.location.href = authUrl;
+            codeVerifier = generateCodeVerifier();
+            generateCodeChallenge(codeVerifier).then(codeChallenge => {
+                const authUrl = `https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?` +
+                    `client_id=${encodeURIComponent(CLIENT_ID)}&` +
+                    `response_type=code&` +
+                    `scope=${encodeURIComponent('Files.ReadWrite.All offline_access')}&` +
+                    `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+                    `response_mode=query&` +
+                    `code_challenge=${encodeURIComponent(codeChallenge)}&` +
+                    `code_challenge_method=S256`;
+                
+                console.log('Generated code verifier, redirecting to auth URL');
+                sessionStorage.setItem('codeVerifier', codeVerifier);
+                window.location.href = authUrl;
+            });
         }
 
         async function handleAuthorizationCallback(authCode) {
@@ -325,6 +353,13 @@
             showMessage('Processing authorization...', 'info');
             
             try {
+                codeVerifier = sessionStorage.getItem('codeVerifier');
+                console.log('Retrieved code verifier:', codeVerifier ? 'Found' : 'Not found');
+                
+                if (!codeVerifier) {
+                    throw new Error('Code verifier not found in session storage');
+                }
+                
                 const tokenUrl = `https://login.microsoftonline.com/consumers/oauth2/v2.0/token`;
                 console.log('Token URL:', tokenUrl);
                 
@@ -333,7 +368,8 @@
                     code: authCode,
                     redirect_uri: REDIRECT_URI,
                     grant_type: 'authorization_code',
-                    scope: 'Files.ReadWrite.All offline_access'
+                    scope: 'Files.ReadWrite.All offline_access',
+                    code_verifier: codeVerifier
                 });
                 
                 console.log('Request body keys:', Array.from(requestBody.keys()));
@@ -359,6 +395,7 @@
 
                 if (refreshToken) {
                     localStorage.setItem('refreshToken', refreshToken);
+                    sessionStorage.removeItem('codeVerifier');
                     updateAuthStatus(true);
                     showMessage('✓ Authorization successful!', 'success');
                     
