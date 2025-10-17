@@ -3,417 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Excel Data Entry Form</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
-            padding: 8px;
-            overflow: hidden;
+            padding: 20px;
         }
-        
-        body.theme-amber {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #1c1917;
-        }
-        
-        body.theme-blue {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            color: #1e3a8a;
-        }
-        
-        body.theme-gray {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            color: #111827;
-        }
-        
-        body.theme-cream {
-            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
-            color: #292524;
-        }
-        
-        body.theme-green {
-            background: #0d1b0d;
-            color: #33ff33;
-            font-family: 'Courier New', monospace;
-        }
-        
-        body.theme-blackgreen {
-            background: linear-gradient(135deg, #86efac 0%, #4ade80 100%);
-            color: #000000;
-        }
-        
-        body.theme-amberblack {
-            background: #000000;
-            color: #fbbf24;
-        }
-        
+
         .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 500px;
             width: 100%;
-            max-width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .auth-section h2 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .auth-status {
             display: flex;
-            flex-direction: column;
-            height: 100vh;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
-        
-        .time {
-            font-size: 1.8em;
-            font-weight: 300;
-            text-align: center;
-            margin: 0;
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #999;
         }
-        
-        .date {
-            font-size: 0.75em;
-            text-align: center;
-            opacity: 0.9;
-            margin: 0;
+
+        .status-dot.authorized {
+            background: #28a745;
         }
-        
-        .weather-row {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex: 1;
-            min-height: 0;
+
+        .status-text {
+            color: #666;
         }
-        
-        .card {
-            border-radius: 15px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-        }
-        
-        body.theme-amber .card {
-            background: rgba(255, 255, 255, 0.8);
-            color: #1c1917;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-        
-        body.theme-blue .card {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1e3a8a;
-            box-shadow: 0 4px 16px rgba(30, 58, 138, 0.1);
-        }
-        
-        body.theme-gray .card {
-            background: #ffffff;
-            color: #111827;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        }
-        
-        body.theme-cream .card {
-            background: rgba(255, 255, 255, 0.7);
-            color: #292524;
-            border: 1px solid rgba(41, 37, 36, 0.1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        body.theme-green .card {
-            background: rgba(0, 20, 0, 0.6);
-            color: #33ff33;
-            border: 2px solid #33ff33;
-            box-shadow: 0 0 20px rgba(51, 255, 51, 0.3), inset 0 0 20px rgba(51, 255, 51, 0.1);
-            text-shadow: 0 0 5px rgba(51, 255, 51, 0.7);
-        }
-        
-        body.theme-blackgreen .card {
-            background: rgba(220, 252, 231, 0.9);
-            color: #000000;
-            border: 2px solid #166534;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        body.theme-amberblack .card {
-            background: rgba(20, 20, 20, 0.95);
-            color: #fbbf24;
-            border: 2px solid #f59e0b;
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
-        }
-        
-        body.theme-green .card-title {
-            text-shadow: 0 0 8px rgba(51, 255, 51, 0.8);
-        }
-        
-        .card-title {
-            font-size: 0.7em;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+
+        .status-text.authorized {
+            color: #28a745;
             font-weight: 600;
         }
-        
-        .weather-main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
+
+        .auth-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .temperature {
-            font-size: 2.2em;
-            font-weight: 300;
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
-        .weather-icon {
-            font-size: 2.8em;
+
+        .auth-button:active {
+            transform: translateY(0);
         }
-        
-        .weather-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            font-size: 0.72em;
-            line-height: 1.3;
-            flex: 1;
+
+        .auth-button.authorized {
+            background: #28a745;
         }
-        
-        .currency-card {
-            flex: 0.4;
-            padding: 8px;
+
+        .form-group {
+            margin-bottom: 20px;
         }
-        
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
         .loading {
-            text-align: center;
-            opacity: 0.7;
+            display: inline-block;
+            animation: spin 1s linear infinite;
         }
-        
-        .error {
-            color: #fca5a5;
-            text-align: center;
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="container">
-        <div>
-            <div class="time" id="time">--:--</div>
-            <div class="date" id="date">Loading...</div>
-        </div>
-        
-        <div id="content-area" class="weather-row">
-            <div class="card">
-                <div class="card-title">Amsterdam</div>
-                <div id="weather-amsterdam" class="loading">Loading...</div>
+    <div class="container">
+        <h1>📊 Excel Data Entry</h1>
+        <p class="subtitle">Add data to your OneDrive Excel file</p>
+
+        <!-- Authorization Section -->
+        <div class="auth-section">
+            <h2>Authorization (First Time Only)</h2>
+            <div class="auth-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span class="status-text" id="statusText">Not authorized</span>
             </div>
+            <button class="auth-button" id="authorizeBtn">🔐 Authorize with Microsoft</button>
         </div>
+
+        <!-- Form Section -->
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="code">Code *</label>
+                <input type="number" id="code" name="code" placeholder="Enter code" required>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input type="text" id="title" name="title" placeholder="Enter title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="col_g">Column G</label>
+                <input type="text" id="col_g" name="col_g" placeholder="Enter value for Column G">
+            </div>
+
+            <div class="form-group">
+                <label for="col_h">Column H</label>
+                <input type="text" id="col_h" name="col_h" placeholder="Enter value for Column H">
+            </div>
+
+            <div class="form-group">
+                <label for="col_i">Column I</label>
+                <input type="text" id="col_i" name="col_i" placeholder="Enter value for Column I">
+            </div>
+
+            <div class="form-group">
+                <label for="col_j">Column J</label>
+                <input type="text" id="col_j" name="col_j" placeholder="Enter value for Column J">
+            </div>
+
+            <div class="form-group">
+                <label for="col_k">Column K</label>
+                <input type="text" id="col_k" name="col_k" placeholder="Enter value for Column K">
+            </div>
+
+            <div class="form-group">
+                <label for="col_l">Column L</label>
+                <input type="text" id="col_l" name="col_l" placeholder="Enter value for Column L">
+            </div>
+
+            <div class="form-group">
+                <label for="col_m">Column M (Notes)</label>
+                <textarea id="col_m" name="col_m" placeholder="Enter notes here"></textarea>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitBtn" disabled>Submit Data</button>
+        </form>
+
+        <div class="message" id="message"></div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const theme = urlParams.get('theme') || 'blue';
-        
-        document.body.classList.add(`theme-${theme}`);
-        
-        document.getElementById('content-area').innerHTML = `
-            <div class="card">
-                <div class="card-title">Amsterdam</div>
-                <div id="weather-amsterdam" class="loading">Loading...</div>
-            </div>
+        // ============ CONFIGURATION - UPDATE THESE VALUES ============
+        const CLIENT_ID = '0af4f82e-ecee-49cd-a88f-7e8952adb8b2';  // Your CLIENT_ID
+        const TENANT_ID = 'c0988961-00da-49f4-9e9b-047b936380e4';  // Your TENANT_ID
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        const AZURE_FUNCTION_URL = 'YOUR-AZURE-FUNCTION-URL-HERE';  // Replace with your Function URL
+        const TARGET_FILE_NAME = 'data.xlsx';  // Replace with your Excel file name
+
+        // ============ STATE MANAGEMENT ============
+        let refreshToken = null;
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we're returning from authorization
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+
+            if (authCode) {
+                handleAuthorizationCallback(authCode);
+            } else {
+                // Load existing token if available
+                loadStoredToken();
+            }
+
+            // Setup event listeners
+            document.getElementById('authorizeBtn').addEventListener('click', startAuthorization);
+            document.getElementById('dataForm').addEventListener('submit', handleFormSubmit);
+        });
+
+        // ============ AUTHORIZATION FLOW ============
+        function startAuthorization() {
+            const authUrl = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize?` +
+                `client_id=${encodeURIComponent(CLIENT_ID)}&` +
+                `response_type=code&` +
+                `scope=${encodeURIComponent('Files.ReadWrite.All offline_access')}&` +
+                `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+                `response_mode=query`;
             
-            <div class="card">
-                <div class="card-title">Maspalomas</div>
-                <div id="weather-maspalomas" class="loading">Loading...</div>
-            </div>
-            
-            <div class="card currency-card">
-                <div id="currency-content" class="loading">Loading rate...</div>
-            </div>
-        `;
-        
-        function updateTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
-            
-            const dateStr = now.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            document.getElementById('time').textContent = timeStr;
-            document.getElementById('date').textContent = dateStr;
+            window.location.href = authUrl;
         }
-        
-        async function fetchWeatherForLocation(elementId, lat, lon) {
+
+        async function handleAuthorizationCallback(authCode) {
+            showMessage('Processing authorization...', 'info');
+            
             try {
-                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=celsius&wind_speed_unit=mph&timezone=auto`);
-                const data = await response.json();
-                
-                const tempC = Math.round(data.current.temperature_2m);
-                const tempF = Math.round(tempC * 9/5 + 32);
-                const feelsLikeC = Math.round(data.current.apparent_temperature);
-                const feelsLikeF = Math.round(feelsLikeC * 9/5 + 32);
-                const humidity = data.current.relative_humidity_2m;
-                const windSpeed = Math.round(data.current.wind_speed_10m);
-                
-                const highC = Math.round(data.daily.temperature_2m_max[0]);
-                const highF = Math.round(highC * 9/5 + 32);
-                const lowC = Math.round(data.daily.temperature_2m_min[0]);
-                const lowF = Math.round(lowC * 9/5 + 32);
-                
-                const tomorrowHighC = Math.round(data.daily.temperature_2m_max[1]);
-                const tomorrowHighF = Math.round(tomorrowHighC * 9/5 + 32);
-                const tomorrowLowC = Math.round(data.daily.temperature_2m_min[1]);
-                const tomorrowLowF = Math.round(tomorrowLowC * 9/5 + 32);
-                
-                const rainChance = data.daily.precipitation_probability_max[0] || 0;
-                
-                const sunrise = new Date(data.daily.sunrise[0]);
-                const sunset = new Date(data.daily.sunset[0]);
-                const riseTime = `${String(sunrise.getHours()).padStart(2, '0')}:${String(sunrise.getMinutes()).padStart(2, '0')}`;
-                const setTime = `${String(sunset.getHours()).padStart(2, '0')}:${String(sunset.getMinutes()).padStart(2, '0')}`;
-                
-                const weatherCode = data.current.weather_code;
-                let icon = '☀️';
-                
-                if (weatherCode === 0) { icon = '☀️'; }
-                else if (weatherCode <= 3) { icon = '☁️'; }
-                else if (weatherCode <= 67) { icon = '🌧️'; }
-                else if (weatherCode <= 77) { icon = '❄️'; }
-                else if (weatherCode <= 99) { icon = '⛈️'; }
-                
-                document.getElementById(elementId).innerHTML = `
-                    <div class="weather-main">
-                        <div>
-                            <div class="temperature">${tempF}°F<span style="font-size: 0.4em; opacity: 0.7; margin-left: 3px;">${tempC}°C</span></div>
-                            <div style="font-size: 0.65em; opacity: 0.8;">Feels: ${feelsLikeF}°F</div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; align-items: center;">
-                            <div class="weather-icon">${icon}</div>
-                            <div style="font-size: 0.55em; opacity: 0.8;">💧${rainChance}%</div>
-                        </div>
-                    </div>
-                    <div class="weather-details">
-                        <div>Low/Tom:<br>${lowF}°F / ${tomorrowLowF}°F</div>
-                        <div>High/Tom:<br>${highF}°F / ${tomorrowHighF}°F</div>
-                        <div>Rise/Set:<br>${riseTime} / ${setTime}</div>
-                        <div>Humidity/Wind:<br>${humidity}% / ${windSpeed} mph</div>
-                    </div>
-                `;
+                const tokenResponse = await fetch(`https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        client_id: CLIENT_ID,
+                        code: authCode,
+                        redirect_uri: REDIRECT_URI,
+                        grant_type: 'authorization_code',
+                        scope: 'Files.ReadWrite.All offline_access'
+                    })
+                });
+
+                if (!tokenResponse.ok) {
+                    throw new Error('Token exchange failed');
+                }
+
+                const tokenData = await tokenResponse.json();
+                refreshToken = tokenData.refresh_token;
+
+                if (refreshToken) {
+                    localStorage.setItem('refreshToken', refreshToken);
+                    updateAuthStatus(true);
+                    showMessage('✓ Authorization successful!', 'success');
+                    
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } else {
+                    throw new Error('No refresh token received');
+                }
             } catch (error) {
-                document.getElementById(elementId).innerHTML = '<div class="error">Weather unavailable</div>';
+                console.error('Authorization error:', error);
+                showMessage('✗ Authorization failed: ' + error.message, 'error');
             }
         }
-        
-        function fetchAllWeather() {
-            fetchWeatherForLocation('weather-amsterdam', 52.3676, 4.9041);
-            fetchWeatherForLocation('weather-maspalomas', 27.7609, -15.5863);
+
+        function loadStoredToken() {
+            refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) {
+                updateAuthStatus(true);
+            }
         }
-        
-        function isInActiveWindow() {
-            const now = new Date();
-            const utcDay = now.getUTCDay();
-            const utcHour = now.getUTCHours();
-            
-            if (utcDay === 5 && utcHour >= 21) return false;
-            if (utcDay === 6) return false;
-            if (utcDay === 0 && utcHour < 21) return false;
-            
-            return true;
+
+        // ============ UI UPDATES ============
+        function updateAuthStatus(isAuthorized) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const authorizeBtn = document.getElementById('authorizeBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (isAuthorized) {
+                statusDot.classList.add('authorized');
+                statusText.textContent = '✓ Authorized (refresh token stored)';
+                statusText.classList.add('authorized');
+                authorizeBtn.classList.add('authorized');
+                authorizeBtn.textContent = '✓ Already Authorized';
+                submitBtn.disabled = false;
+            } else {
+                statusDot.classList.remove('authorized');
+                statusText.textContent = 'Not authorized';
+                statusText.classList.remove('authorized');
+                authorizeBtn.classList.remove('authorized');
+                authorizeBtn.textContent = '🔐 Authorize with Microsoft';
+                submitBtn.disabled = true;
+            }
         }
-        
-        async function fetchCurrency() {
-            const params = new URLSearchParams(window.location.search);
-            const lowThreshold = parseFloat(params.get('low')) || 1.1;
-            const highThreshold = parseFloat(params.get('high')) || 1.2;
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
             
-            let oxrRate = null, oxrDateTime = null;
-            let ecbRate = null, ecbDate = null;
-            let altRate = null, altDateTime = null;
-            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageEl.className = 'message';
+                }, 3000);
+            }
+        }
+
+        // ============ FORM SUBMISSION ============
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            if (!refreshToken) {
+                showMessage('✗ Please authorize first', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading">⌛</span> Submitting...';
+
             try {
-                const response = await fetch('https://openexchangerates.org/api/latest.json?app_id=59f0442d524d41608055554519509c57');
-                const data = await response.json();
-                
-                const usdEurRate = data.rates.EUR;
-                oxrRate = (1 / usdEurRate).toFixed(5);
-                
-                const updateDate = new Date(data.timestamp * 1000);
-                const month = updateDate.toLocaleString('en-US', { month: 'short' });
-                const day = updateDate.getDate();
-                const hours = String(updateDate.getHours()).padStart(2, '0');
-                const minutes = String(updateDate.getMinutes()).padStart(2, '0');
-                oxrDateTime = `${month} ${day}, ${hours}:${minutes}`;
-            } catch (e) {}
-            
-            try {
-                const resp = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD');
-                const data = await resp.json();
-                ecbRate = data.rates.USD.toFixed(5);
-                ecbDate = data.date;
-            } catch (e) {}
-            
-            try {
-                const resp = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
-                const data = await resp.json();
-                altRate = data.rates.USD.toFixed(5);
-                
-                if (data.time_last_update_utc) {
-                    const updateDate = new Date(data.time_last_update_utc);
-                    if (!isNaN(updateDate.getTime())) {
-                        const month = updateDate.toLocaleString('en-US', { month: 'short' });
-                        const day = updateDate.getDate();
-                        const hours = String(updateDate.getHours()).padStart(2, '0');
-                        const minutes = String(updateDate.getMinutes()).padStart(2, '0');
-                        altDateTime = `${month} ${day}, ${hours}:${minutes}`;
+                const formData = {
+                    code: document.getElementById('code').value,
+                    title: document.getElementById('title').value,
+                    col_g: document.getElementById('col_g').value,
+                    col_h: document.getElementById('col_h').value,
+                    col_i: document.getElementById('col_i').value,
+                    col_j: document.getElementById('col_j').value,
+                    col_k: document.getElementById('col_k').value,
+                    col_l: document.getElementById('col_l').value,
+                    col_m: document.getElementById('col_m').value
+                };
+
+                const payload = {
+                    new_row_data: formData,
+                    target_file_name: TARGET_FILE_NAME,
+                    refresh_token: refreshToken
+                };
+
+                const response = await fetch(AZURE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('✓ Data submitted successfully!', 'success');
+                    document.getElementById('dataForm').reset();
+                } else {
+                    showMessage('✗ Error: ' + result.message, 'error');
+                    
+                    // If token expired, clear it
+                    if (response.status === 401) {
+                        localStorage.removeItem('refreshToken');
+                        refreshToken = null;
+                        updateAuthStatus(false);
+                        showMessage('✗ Token expired. Please authorize again.', 'error');
                     }
                 }
-            } catch (e) {}
-            
-            const displayRate = oxrRate || ecbRate || altRate || '0.00000';
-            const rateNum = parseFloat(displayRate);
-            
-            let leftIcon = '';
-            let rightIcon = '';
-            if (rateNum < lowThreshold) {
-                leftIcon = '✅ ';
-            } else if (rateNum > highThreshold) {
-                rightIcon = ' ❌';
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage('✗ Network error: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Data';
             }
-            
-            let infoLine = '';
-            const parts = [];
-            if (oxrRate) parts.push(`OXR $${oxrRate} (${oxrDateTime})`);
-            if (ecbRate) parts.push(`ECB $${ecbRate} (${ecbDate})`);
-            if (altRate) parts.push(`Alt $${altRate}${altDateTime ? ' (' + altDateTime + ')' : ''}`);
-            infoLine = parts.join(' • ');
-            
-            document.getElementById('currency-content').innerHTML = `
-                <div class="card-title">${leftIcon}EUR → USD - $${displayRate}${rightIcon}</div>
-                <div style="font-size: 0.6em; opacity: 0.7; margin-top: 2px; word-wrap: break-word; white-space: normal;">${infoLine}</div>
-            `;
         }
-        
-        updateTime();
-        setInterval(updateTime, 1000);
-        
-        fetchAllWeather();
-        fetchCurrency();
-        
-        setInterval(fetchAllWeather, 600000);
-        setInterval(() => {
-            if (isInActiveWindow()) {
-                fetchCurrency();
-            }
-        }, 3600000);
     </script>
 </body>
 </html>
-
