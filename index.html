@@ -203,7 +203,7 @@
 </head>
 <body>
     <div class="container">
-        <div style="text-align: right; font-size: 12px; color: #999; margin-bottom: 15px;">v7</div>
+        <div style="text-align: right; font-size: 12px; color: #999; margin-bottom: 15px;">v8</div>
         <h1>📊 Excel Data Entry</h1>
         <p class="subtitle">Add data to your OneDrive Excel file</p>
 
@@ -276,6 +276,7 @@
         const TENANT_ID = 'c0988961-00da-49f4-9e9b-047b936380e4';  // Your TENANT_ID
         const REDIRECT_URI = window.location.origin + window.location.pathname;
         const AZURE_FUNCTION_URL = 'https://excel-inserter-func-aahzh4ara4f2f2gw.northeurope-01.azurewebsites.net/api/AddRowFunction';  // Your Function URL
+        const FUNCTION_KEY = 'Rxbz1IjqmICAAeVk9OocgSDhePCvF1unPvDnrzHgeObuAzFuZh7sJA==';  // Your function key
         const TARGET_FILE_NAME = 'data.xlsx';  // Replace with your Excel file name
 
         // ============ STATE MANAGEMENT ============
@@ -485,7 +486,7 @@
                     refresh_token: refreshToken
                 };
 
-                const response = await fetch(AZURE_FUNCTION_URL, {
+                const response = await fetch(AZURE_FUNCTION_URL + '?code=' + encodeURIComponent(FUNCTION_KEY), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
