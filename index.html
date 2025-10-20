@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Data Updater</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .legend-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .legend-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        select, input[type="text"], input[type="number"], input[type="date"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .project-selector {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .reset-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden-field {
+            display: none;
+        }
+
+        .legend-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        .legend-table th, .legend-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .legend-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .legend-table td {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .legend-subtitle {
+            font-weight: 600;
+            color: #333;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d32f2f;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .legend-section {
+                max-height: none;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Excel Data Updater</h1>
+            <p>Add new entries to your Excel spreadsheets from anywhere</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2>Entry Form</h2>
+
+                <form id="dataForm">
+                    <!-- Project Selector -->
+                    <div class="project-selector">
+                        <label for="projectSelect">Select Project:</label>
+                        <select id="projectSelect" required>
+                            <option value="">-- Choose a project --</option>
+                            <option value="movies">Movies & Shows</option>
+                            <option value="transfers" disabled>Transfers (Coming Soon)</option>
+                            <option value="placeholder" disabled>Other Projects (Coming Soon)</option>
+                        </select>
+                    </div>
+
+                    <!-- Movies/Shows Fields (all visible by default, hidden for other projects) -->
+                    <div id="movies-fields">
+                        <div class="form-group">
+                            <label for="code" class="required">Code (Number/Decimal)</label>
+                            <input type="number" id="code" name="code" step="0.1" placeholder="e.g., 1.1, 2000.1" required>
+                            <small style="color: #999;">Whole number = Who, Decimal = Status (see legend)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title" class="required">Title</label>
+                            <input type="text" id="title" name="title" placeholder="Movie or show title" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_g">First Season / Get</label>
+                            <input type="text" id="col_g" name="col_g" placeholder="Optional">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_h">To Watch / Where</label>
+                            <input type="text" id="col_h" name="col_h" placeholder="Optional">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_i">Seasons / Made</label>
+                            <input type="text" id="col_i" name="col_i" value="Download" placeholder="Default: Download">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_j">Season / Data Avail (Date)</label>
+                            <input type="text" id="col_j" name="col_j" placeholder="e.g., 1/1/2025 or 15-Jan-2025">
+                            <small style="color: #999;">Accepts multiple formats: mm/dd/yyyy, dd-mmm-yyyy, yyyy-mm-dd</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_k">Website / Notes</label>
+                            <input type="text" id="col_k" name="col_k" placeholder="Optional">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_l">Notes</label>
+                            <input type="text" id="col_l" name="col_l" placeholder="Optional">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="col_m">Synopsis</label>
+                            <textarea id="col_m" name="col_m" placeholder="Optional"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Transfers Fields (hidden by default) -->
+                    <div id="transfers-fields" class="hidden-field">
+                        <p style="color: #999; text-align: center;">Transfers project not yet configured.</p>
+                    </div>
+
+                    <!-- Button Group -->
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn">Submit Entry</button>
+                        <button type="reset" class="reset-btn">Clear Form</button>
+                    </div>
+
+                    <!-- Message Display -->
+                    <div id="message" class="message"></div>
+                </form>
+            </div>
+
+            <!-- Legend Section -->
+            <div class="legend-section">
+                <h2>📖 Code Legend</h2>
+                
+                <div class="legend-subtitle">Whole Number (Who is interested)</div>
+                <table class="legend-table">
+                    <thead>
+                        <tr>
+                            <th>Code Range</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0.x</td>
+                            <td>Laura</td>
+                        </tr>
+                        <tr>
+                            <td>1.x</td>
+                            <td>Laura Maybe</td>
+                        </tr>
+                        <tr>
+                            <td>2.x</td>
+                            <td>Not Laura</td>
+                        </tr>
+                        <tr>
+                            <td>1000.x</td>
+                            <td>Laura Only</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="legend-subtitle">Decimal Part (Acquisition Status)</div>
+                <table class="legend-table">
+                    <thead>
+                        <tr>
+                            <th>Decimal Code</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.1</td>
+                            <td>Avail Now</td>
+                        </tr>
+                        <tr>
+                            <td>.4</td>
+                            <td>Weekly</td>
+                        </tr>
+                        <tr>
+                            <td>.5</td>
+                            <td>Trying to Find</td>
+                        </tr>
+                        <tr>
+                            <td>.6</td>
+                            <td>Found but $ (Paid)</td>
+                        </tr>
+                        <tr>
+                            <td>.7</td>
+                            <td>Future Date Set</td>
+                        </tr>
+                        <tr>
+                            <td>.8</td>
+                            <td>Announced as Coming</td>
+                        </tr>
+                        <tr>
+                            <td>.9</td>
+                            <td>Unknown if Coming</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://api.ldmathes.cc/api/submit';
+
+        const projectSelector = document.getElementById('projectSelect');
+        const form = document.getElementById('dataForm');
+        const messageDiv = document.getElementById('message');
+
+        // Project field mappings
+        const projectFields = {
+            movies: ['code', 'title', 'col_g', 'col_h', 'col_i', 'col_j', 'col_k', 'col_l', 'col_m'],
+            transfers: [],
+            placeholder: []
+        };
+
+        // Handle project selection
+        projectSelector.addEventListener('change', function() {
+            const selectedProject = this.value;
+            
+            // Hide all field groups
+            document.getElementById('movies-fields').classList.add('hidden-field');
+            document.getElementById('transfers-fields').classList.add('hidden-field');
+
+            // Show selected project fields
+            if (selectedProject === 'movies') {
+                document.getElementById('movies-fields').classList.remove('hidden-field');
+            } else if (selectedProject === 'transfers') {
+                document.getElementById('transfers-fields').classList.remove('hidden-field');
+            }
+
+            // Clear previous messages
+            messageDiv.classList.remove('show', 'success', 'error', 'info');
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const project = projectSelector.value;
+            if (!project) {
+                showMessage('Please select a project', 'error');
+                return;
+            }
+
+            // Build payload based on project
+            const payload = {
+                code: document.getElementById('code').value,
+                title: document.getElementById('title').value,
+                col_g: document.getElementById('col_g').value,
+                col_h: document.getElementById('col_h').value,
+                col_i: document.getElementById('col_i').value,
+                col_j: document.getElementById('col_j').value,
+                col_k: document.getElementById('col_k').value,
+                col_l: document.getElementById('col_l').value,
+                col_m: document.getElementById('col_m').value
+            };
+
+            // Validate required fields
+            if (!payload.code || !payload.title) {
+                showMessage('Code and Title are required', 'error');
+                return;
+            }
+
+            // Submit
+            try {
+                const submitBtn = document.querySelector('.submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    showMessage(`✓ ${data.message}`, 'success');
+                    form.reset();
+                    projectSelector.value = '';
+                    document.getElementById('movies-fields').classList.add('hidden-field');
+                } else {
+                    showMessage(`✗ ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`Network error: ${error.message}`, 'error');
+            } finally {
+                const submitBtn = document.querySelector('.submit-btn');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Entry';
+            }
+        });
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message show ${type}`;
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Set default value for col_i
+        document.getElementById('col_i').value = 'Download';
+    </script>
+</body>
+</html>
