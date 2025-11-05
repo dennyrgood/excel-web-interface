@@ -110,11 +110,7 @@
             min-height: 80px;
         }
 
-        .project-selector {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
+
 
         .button-group {
             display: flex;
@@ -256,18 +252,7 @@
                 <h2>Entry Form</h2>
 
                 <form id="dataForm">
-                    <!-- Project Selector -->
-                    <div class="project-selector">
-                        <label for="projectSelect">Select Project:</label>
-                        <select id="projectSelect" required>
-                            <option value="">-- Choose a project --</option>
-                            <option value="movies">Movies & Shows</option>
-                            <option value="transfers" disabled>Transfers (Coming Soon)</option>
-                            <option value="placeholder" disabled>Other Projects (Coming Soon)</option>
-                        </select>
-                    </div>
-
-                    <!-- Movies/Shows Fields (all visible by default, hidden for other projects) -->
+                    <!-- Movies/Shows Fields -->
                     <div id="movies-fields">
                         <div class="form-group">
                             <label for="code" class="required">Code (Number/Decimal)</label>
@@ -315,11 +300,6 @@
                             <label for="col_m">Synopsis</label>
                             <textarea id="col_m" name="col_m" placeholder="Optional"></textarea>
                         </div>
-                    </div>
-
-                    <!-- Transfers Fields (hidden by default) -->
-                    <div id="transfers-fields" class="hidden-field">
-                        <p style="color: #999; text-align: center;">Transfers project not yet configured.</p>
                     </div>
 
                     <!-- Button Group -->
@@ -411,45 +391,12 @@
     <script>
         const BACKEND_URL = 'https://api.ldmathes.cc/api/submit';
 
-        const projectSelector = document.getElementById('projectSelect');
         const form = document.getElementById('dataForm');
         const messageDiv = document.getElementById('message');
-
-        // Project field mappings
-        const projectFields = {
-            movies: ['code', 'title', 'col_g', 'col_h', 'col_i', 'col_j', 'col_k', 'col_l', 'col_m'],
-            transfers: [],
-            placeholder: []
-        };
-
-        // Handle project selection
-        projectSelector.addEventListener('change', function() {
-            const selectedProject = this.value;
-            
-            // Hide all field groups
-            document.getElementById('movies-fields').classList.add('hidden-field');
-            document.getElementById('transfers-fields').classList.add('hidden-field');
-
-            // Show selected project fields
-            if (selectedProject === 'movies') {
-                document.getElementById('movies-fields').classList.remove('hidden-field');
-            } else if (selectedProject === 'transfers') {
-                document.getElementById('transfers-fields').classList.remove('hidden-field');
-            }
-
-            // Clear previous messages
-            messageDiv.classList.remove('show', 'success', 'error', 'info');
-        });
 
         // Handle form submission
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            const project = projectSelector.value;
-            if (!project) {
-                showMessage('Please select a project', 'error');
-                return;
-            }
 
             // Build payload based on project
             const payload = {
@@ -489,8 +436,7 @@
                 if (response.ok && data.status === 'success') {
                     showMessage(`✓ ${data.message}`, 'success');
                     form.reset();
-                    projectSelector.value = '';
-                    document.getElementById('movies-fields').classList.add('hidden-field');
+                    document.getElementById('col_i').value = 'Download';
                 } else {
                     showMessage(`✗ ${data.message}`, 'error');
                 }
