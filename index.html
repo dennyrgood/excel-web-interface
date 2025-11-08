@@ -438,10 +438,60 @@
                     form.reset();
                     document.getElementById('col_i').value = 'Download';
                 } else {
-                    showMessage(`✗ ${data.message}`, 'error');
+                    // If the backend returned an error, append helpful suggestions for common OneDrive/Excel issues.
+                    let displayMessage = `✗ ${data && data.message ? data.message : 'Unknown error'}`;
+
+                    try {
+                        const msg = (data && data.message) ? data.message : '';
+                        let suggestions = '';
+
+                        // Invalid argument / Errno 22 -> possibly file in cloud (OneDrive placeholder)
+                        if ((msg.includes("Invalid argument") || msg.includes("Errno 22")) &&
+                            (msg.includes("MoviesShows.xlsx") || msg.includes("OneDrive") || msg.includes("MS/MoviesShows.xlsx"))) {
+                            suggestions += ' Is the file still in the cloud?';
+                        }
+
+                        // Permission denied / Errno 13 -> possibly file is open/locked by another process
+                        if ((msg.includes("Permission denied") || msg.includes("Errno 13")) &&
+                            (msg.includes("MoviesShows.xlsx") || msg.includes("OneDrive") || msg.includes("MS/MoviesShows.xlsx"))) {
+                            if (suggestions) suggestions += '';
+                            suggestions += ' Is the file open?';
+                        }
+
+                        if (suggestions) {
+                            displayMessage += suggestions;
+                        }
+                    } catch (innerErr) {
+                        // ignore parsing errors, just show the original message
+                    }
+
+                    showMessage(displayMessage, 'error');
                 }
             } catch (error) {
-                showMessage(`Network error: ${error.message}`, 'error');
+                // Network or unexpected error
+                let netMsg = `Network error: ${error.message}`;
+
+                try {
+                    const em = error && error.message ? error.message : '';
+                    let suggestions = '';
+
+                    if ((em.includes("Invalid argument") || em.includes("Errno 22")) &&
+                        (em.includes("MoviesShows.xlsx") || em.includes("OneDrive") || em.includes("MS/MoviesShows.xlsx"))) {
+                        suggestions += ' Is the file still in the cloud?';
+                    }
+
+                    if ((em.includes("Permission denied") || em.includes("Errno 13")) &&
+                        (em.includes("MoviesShows.xlsx") || em.includes("OneDrive") || em.includes("MS/MoviesShows.xlsx"))) {
+                        if (suggestions) suggestions += '';
+                        suggestions += ' Is the file open?';
+                    }
+
+                    if (suggestions) netMsg += suggestions;
+                } catch (innerErr) {
+                    // ignore
+                }
+
+                showMessage(netMsg, 'error');
             } finally {
                 const submitBtn = document.querySelector('.submit-btn');
                 submitBtn.disabled = false;
